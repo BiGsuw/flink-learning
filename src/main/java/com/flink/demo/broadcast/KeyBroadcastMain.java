@@ -3,6 +3,7 @@ package com.flink.demo.broadcast;
 import com.alibaba.fastjson.JSON;
 import com.flink.demo.broadcast.source.MysqlSource;
 import com.flink.demo.broadcast.transform.CoKeyedBroadcastProcessFunction;
+import com.flink.demo.broadcast.utils.RunTimeUtils;
 import com.flink.demo.pojo.MediaEntity;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -35,17 +36,12 @@ public class KeyBroadcastMain {
     public static void main(String[] args) throws Exception {
 
         // set up the streaming execution environment
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        final StreamExecutionEnvironment env = RunTimeUtils.getRunTimeEnvironment();
         //flink 1.12之前使用的是如下方式，1.13 时已废弃
 //        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
         //flink 1.13 默认使用的是eventTime，并且自动生成watermark，如果想显式的使用processTime可以把关闭watermark（设置为0）
         env.getConfig().setAutoWatermarkInterval(0);
 
-        //设置Checkpoint
-//        CheckpointConfig checkpointConfig = env.getCheckpointConfig();
-//        checkpointConfig.setCheckpointInterval(60 * 1000);
-//        checkpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-//        checkpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         Properties kafkaProperties = new Properties();
         kafkaProperties.setProperty("bootstrap.servers", "127.0.0.1:9092");

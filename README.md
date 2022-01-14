@@ -1,2 +1,2 @@
-# flink-lern
+# flink-learning
 learn flink process &amp; demo

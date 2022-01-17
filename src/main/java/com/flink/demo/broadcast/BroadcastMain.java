@@ -5,6 +5,7 @@ import com.flink.demo.broadcast.source.MysqlSource;
 import com.flink.demo.broadcast.transform.CoBroadcastProcessFunction;
 import com.flink.demo.utils.RunTimeUtils;
 import com.flink.demo.pojo.MediaEntity;
+import com.flink.demo.utils.SourceUtils;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -48,21 +49,14 @@ public class BroadcastMain {
         Properties kafkaProperties = new Properties();
         kafkaProperties.setProperty("bootstrap.servers", "127.0.0.1:9092");
         kafkaProperties.setProperty("auto.offset.reset", "earliest");
-
-
-        //kafka 流
         kafkaProperties.setProperty("group.id","flink-kafka-test");
-        FlinkKafkaConsumerBase<String> kafkaSource = new FlinkKafkaConsumer011<>("test_online"
-                        ,new SimpleStringSchema(),
-                        kafkaProperties);
-        DataStream<String> kafkaStream = env
-                .addSource(kafkaSource)
-                .setParallelism(1)
-                .name("kafka_source");
 
+        //kafka source
+        DataStream<String> kafkaStream = SourceUtils.kafkaSourceUtils(env, kafkaProperties, "test_online");
         SingleOutputStreamOperator<MediaEntity> mediaSource = kafkaStream
                 .map(v -> JSON.parseObject(v, MediaEntity.class)).setParallelism(1)
                 .name("kafka-convert-media-map");
+
 
         //mysql 配置流
         DataStreamSource<Map<Integer, Tuple2<String, Integer>>> mysqlStream = env.addSource(
@@ -88,4 +82,6 @@ public class BroadcastMain {
         // execute program
         env.execute("Flink Broadcast State Demo");
     }
+
+
 }

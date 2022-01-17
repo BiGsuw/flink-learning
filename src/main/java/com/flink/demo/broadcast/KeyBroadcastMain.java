@@ -5,7 +5,7 @@ import com.flink.demo.broadcast.source.MysqlSource;
 import com.flink.demo.broadcast.transform.CoKeyedBroadcastProcessFunction;
 import com.flink.demo.utils.RunTimeUtils;
 import com.flink.demo.pojo.MediaEntity;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import com.flink.demo.utils.SourceUtils;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -14,8 +14,6 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumerBase;
 
 import java.util.Map;
 import java.util.Properties;
@@ -46,21 +44,13 @@ public class KeyBroadcastMain {
         Properties kafkaProperties = new Properties();
         kafkaProperties.setProperty("bootstrap.servers", "127.0.0.1:9092");
         kafkaProperties.setProperty("auto.offset.reset", "earliest");
-
+        kafkaProperties.setProperty("group.id", "flink-kafka-test");
 
         //kafka 流
-        kafkaProperties.setProperty("group.id", "flink-kafka-test");
-        FlinkKafkaConsumerBase<String> kafkaSource = new FlinkKafkaConsumer011<>("test_online"
-                , new SimpleStringSchema(),
-                kafkaProperties);
-        DataStream<String> kafkaStream = env
-                .addSource(kafkaSource)
-                .setParallelism(1)
-                .name("kafka_source");
-
+        DataStream<String> kafkaStream = SourceUtils.kafkaSourceUtils(env, kafkaProperties, "test_online");
         SingleOutputStreamOperator<MediaEntity> mediaSource = kafkaStream
                 .map(v -> JSON.parseObject(v, MediaEntity.class)).setParallelism(1)
-                .name("kafka-convert-media-map");
+                .name("keyed-kafka-convert-media-map");
 
 
         //mysql 配置流

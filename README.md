@@ -5,8 +5,7 @@
  
 
 ## broadcast 
- - 广播流使用
-### broadcastMain 广播流启动类
-### keyBroadcastMain key 广播流启动类  
+ - broadcastMain 广播流启动类
+ - keyBroadcastMain key 广播流启动类  
 
 

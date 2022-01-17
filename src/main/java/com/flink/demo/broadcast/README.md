@@ -10,7 +10,7 @@
  
  - Mysql
  
- CREATE TABLE IF NOT EXISTS media_config(
+ CREATE TABLE IF NOT EXISTS test.media_config(
  	media_id int comment '媒体ID',
  	media_name varchar(128) comment '媒体名称',
  	media_type int comment '媒体类型 0：内渠，1：外发',

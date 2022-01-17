@@ -3,7 +3,7 @@ package com.flink.demo.broadcast;
 import com.alibaba.fastjson.JSON;
 import com.flink.demo.broadcast.source.MysqlSource;
 import com.flink.demo.broadcast.transform.CoKeyedBroadcastProcessFunction;
-import com.flink.demo.broadcast.utils.RunTimeUtils;
+import com.flink.demo.utils.RunTimeUtils;
 import com.flink.demo.pojo.MediaEntity;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.common.state.MapStateDescriptor;
